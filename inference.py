@@ -16,6 +16,7 @@ SVD_NITER = 7
 ITEMS_FILENAME = 'items.csv'
 N_NEIGHBORS = 5
 ZIPCODES_FILENAME = 'zipcodes.csv'
+AWS_PORT = 8080
 
 # loading, preprocessing and dimensionality reduction
 df = pd.read_csv('Groceries_dataset.csv')
@@ -68,4 +69,4 @@ def get_neighbors():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=AWS_PORT)

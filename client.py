@@ -3,7 +3,7 @@ Client test module
 """
 import requests
 
-URL = 'http://localhost:5000/get_neighbors'
+URL = 'http://ec2-3-67-94-128.eu-central-1.compute.amazonaws.com:8080/get_neighbors'
 
 body = {'user_id': 1000,
         'user_zip': 'ITC86013',

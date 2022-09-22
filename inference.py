@@ -14,9 +14,8 @@ DATA_FILENAME = 'Groceries_dataset.csv'
 SVD_COMPONENTS = 30
 SVD_NITER = 7
 ITEMS_FILENAME = 'items.csv'
-N_NEIGHBORS = 5
+n = 5
 ZIPCODES_FILENAME = 'zipcodes.csv'
-AWS_PORT = 8080
 
 # loading, preprocessing and dimensionality reduction
 df = pd.read_csv('Groceries_dataset.csv')
@@ -36,16 +35,19 @@ df_svd = pd.DataFrame(svd.transform(df_m))
 app = Flask(__name__)
 
 
-@app.route('/get_neighbors')
+@app.route('/get_neighbors', methods=['POST'])
 def get_neighbors():
     """
     get arg 'basket', a list of item ids
     :return: list of top5 neighbors
     """
     # get args
-    items_list = json.loads(request.args.get('basket'))
-    user_id = int(request.args.get('user_id'))
-    user_zip = request.args.get('user_zip')
+    args = request.get_json()
+
+    items_list = json.loads(args['basket'])
+    user_id = args['user_id']
+    user_zip = args['user_zip']
+    n = args['n']
     # get sample
     basket_df = items.iloc[items_list]
     sample = pd.Series(df_m.columns).isin(list(basket_df['name'].values)).astype(int).values
@@ -61,7 +63,7 @@ def get_neighbors():
     # exclude user from neighbors df, so we don't recommend the user for herself
     if user_id in similarity_df.index:
         similarity_df = similarity_df.drop([user_id])
-    top5 = similarity_df.sort_values(by='similarity', ascending=False).head(N_NEIGHBORS)
+    top5 = similarity_df.sort_values(by='similarity', ascending=False).head(n)
     top5_ids = list(top5.index)
     json_obj = json.dumps(top5_ids)
 
@@ -69,4 +71,5 @@ def get_neighbors():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=AWS_PORT)
+    app.run(host='0.0.0.0', port=8080)
+    
